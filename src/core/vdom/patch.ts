@@ -629,29 +629,39 @@ export function createPatchFunction(backend) {
       i(oldVnode, vnode)
     }
 
+      // 旧dom 中的子元素
     const oldCh = oldVnode.children
+     // 新dom 子元素
     const ch = vnode.children
+
     if (isDef(data) && isPatchable(vnode)) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef((i = data.hook)) && isDef((i = i.update))) i(oldVnode, vnode)
     }
+          // 判断是否有元素
     if (isUndef(vnode.text)) {
+       // 判断新旧都有子元素
       if (isDef(oldCh) && isDef(ch)) {
+        // 判断新旧子元素不相等
         if (oldCh !== ch)
+          // 同级元素对比
           updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
-      } else if (isDef(ch)) {
+      } else if (isDef(ch)) { //判断有新子元素
         if (__DEV__) {
           checkDuplicateKeys(ch)
         }
+        // 判断旧元素是否有值，有就清除
         if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+        //添加新dom
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
-      } else if (isDef(oldCh)) {
+      } else if (isDef(oldCh)) { //判断有旧子元素
+        //删除旧子元素
         removeVnodes(oldCh, 0, oldCh.length - 1)
-      } else if (isDef(oldVnode.text)) {
-        nodeOps.setTextContent(elm, '')
+      } else if (isDef(oldVnode.text)) { // 判断旧子元素有内容
+        nodeOps.setTextContent(elm, '') // 清空
       }
-    } else if (oldVnode.text !== vnode.text) {
-      nodeOps.setTextContent(elm, vnode.text)
+    } else if (oldVnode.text !== vnode.text) { // 旧的dom内容不等于新dom 
+      nodeOps.setTextContent(elm, vnode.text) // 用新dom覆盖旧dom
     }
     if (isDef(data)) {
       if (isDef((i = data.hook)) && isDef((i = i.postpatch))) i(oldVnode, vnode)
